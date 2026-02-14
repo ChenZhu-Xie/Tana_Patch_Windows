@@ -9,10 +9,7 @@
 
 $UseInlineCss = $true
 $InlineCss = @"
-/* https://github.com/rcvd/Tana-CSS-Snippets/blob/main/Custom%20Formats/custom-formats.css */
-/* ===== Tana Font Override (Windows) ===== */
-
-/* editor text */
+/* ===== Tana Font & Editor Base ===== */
 .editable, .content {
   font-family: "Inconsolata-LXGWMono" !important;
   font-size: 20px !important;
@@ -21,82 +18,76 @@ $InlineCss = @"
   -webkit-font-smoothing: antialiased;
 }
 
-/* Code-like areas - 冰晶蓝 (区别于极光青) */
-code, pre, kbd, samp {
-  font-family:
-    "Inconsolata-LXGWMono",
-    "JetBrains Mono",
-    "LXGW WenKai Mono GB",
-    Consolas,
-    "Courier New",
-    monospace !important;
-  font-size: 16px !important;
-  color: #80FFEA !important;
-}
-
+/* ===== Titles & Headers ===== */
+/* 节点标题 - 霓虹粉 */
 .node-title, h1, h2, h3, h4, h5, h6 {
-    font-size: 30px !important;
-    font-weight: 350 !important; /* 300 is regular */
-    letter-spacing: 0.015em !important;
-    color: #FF6AC2 !important; /* 霓虹粉 */
-}
-
-/* 针对包含 sectionHeading 特征的父级下的编辑区 */
-div[class*="NodeAsListElement-module_sectionHeading"] .editable,
-.isSection .editable {
-    font-size: 30px !important;
+    font-size: 30px !important; 
     font-weight: 350 !important;
     letter-spacing: 0.015em !important;
-    color: #4CC9F0 !important; /* 极光青 */
+    color: #FF6AC2 !important; 
 }
 
-/* 加粗 - 极光绿 */
-strong, b {
-    font-size: inherit !important;
+/* Section 标题区域 - 极光青 */
+div[class*="sectionHeading"] .editable,
+.isSection .editable {
+    font-size: 30px !important; 
+    font-weight: 350 !important;
+    letter-spacing: 0.015em !important;
+    color: #4CC9F0 !important; 
+}
+
+/* ===== Inline Text Formats ===== */
+
+/* 加粗 (Bold) - 极光绿 */
+b, strong {
     font-weight: 350 !important;
     color: #98ffb3 !important;
 }
 
-/* 斜体 - 复古玫瑰红 (既不是橘色也不是紫色) */
-em, i, .italic {
+/* 斜体 (Italic) - 复古红 */
+i, em, .italic {
     font-style: italic !important;
     color: #FF5555 !important;
 }
 
-/* 下划线 - 活力橙 (保持不变) */
+/* 下划线 (Underline) - 活力橙 */
 u, .underline {
     text-decoration: none !important;
     border-bottom: 2px solid #FFB86C !important;
     padding-bottom: 1px !important;
+    color: inherit !important;
 }
 
-/* 删除线 - 增加对 Tana 模块类名的匹配 */
-s, del, [class*="strikethrough"], span[style*="line-through"] {
+/* 删除线 (Strikethrough) - 灰蓝 (含 strike 标签支持) */
+strike, s, del, [class*="strikethrough"] {
     text-decoration: line-through !important;
     color: #94a3b8 !important;
     opacity: 0.5 !important;
 }
 
-/* 高亮 - 发光黄 */
-mark, .highlight, .expandedHighlight, .tanas-highlight {
-    background-color: rgba(241, 250, 140, 0.2) !important;
+/* 代码块 (Code) - 冰晶蓝 */
+code, pre, kbd, samp {
+  font-family: "Inconsolata-LXGWMono", "JetBrains Mono", monospace !important;
+  font-size: 16px !important;
+  color: #80FFEA !important;
+}
+
+/* 高亮 (Highlight) - 发光黄 */
+mark, .highlight, .expandedHighlight {
+    background-color: rgba(241, 250, 140, 0.15) !important;
     color: #F1FA8C !important;
     padding: 0 4px !important;
     border-radius: 4px !important;
-    border: 1px solid rgba(241, 250, 140, 0.4) !important;
+    border: 1px solid rgba(241, 250, 140, 0.3) !important;
     font-weight: 450 !important;
 }
-
- /* 备用颜色：Gemini CLI 配色 #cba6f7 #f38ba8 #a6e3a1 #f9e2af #89b4fa */
 "@
 
 # ============================================================================
-# 自动路径发现逻辑 (核心修改)
+# 自动路径发现逻辑
 # ============================================================================
 
 Write-Host "Searching for latest Tana version..." -ForegroundColor Cyan
-
-# 1. 定位 Tana 根目录
 $TanaBasePath = "$env:LOCALAPPDATA\tana"
 
 if (-not (Test-Path $TanaBasePath)) {
@@ -104,20 +95,18 @@ if (-not (Test-Path $TanaBasePath)) {
     exit 1
 }
 
-# 2. 获取所有 app- 开头的文件夹，解析版本号并排序
-$LatestVersionDir = Get-ChildItem -Path $TanaBasePath -Directory -Filter "app-*" |
-    Select-Object FullName, @{N='Version';E={[version]($_.Name -replace 'app-','')}} |
-    Sort-Object Version -Descending |
+$LatestVersionDir = Get-ChildItem -Path $TanaBasePath -Directory -Filter "app-*" | 
+    Select-Object FullName, @{N='Version';E={[version]($_.Name -replace 'app-','')}} | 
+    Sort-Object Version -Descending | 
     Select-Object -First 1
 
 if (-not $LatestVersionDir) {
-    Write-Error "Could not find any Tana version folders (app-x.x.x)."
+    Write-Error "Could not find any Tana version folders."
     exit 1
 }
 
 Write-Host "Found latest version: $($LatestVersionDir.Version)" -ForegroundColor Green
 
-# 3. 动态构建路径
 $TanaBuildPath = Join-Path -Path $LatestVersionDir.FullName -ChildPath "resources\app\build"
 $TanaPreloadPath = Join-Path -Path $TanaBuildPath -ChildPath "preload.js"
 $TanaExePath = "$TanaBasePath\Tana.exe"
@@ -134,10 +123,9 @@ if (-not (Test-Path -Path $TanaPreloadPath)) {
 $CurrentContent = Get-Content -Path $TanaPreloadPath -Raw
 
 if ($CurrentContent -match "TANA_CUSTOM_CSS_INJECTED") {
-    Write-Host "Patch already detected." -ForegroundColor Yellow
+    Write-Host "Patch already detected. Restoring backup to re-apply CSS..." -ForegroundColor Yellow
     $BackupPath = "$TanaPreloadPath.backup"
     if (Test-Path -Path $BackupPath) {
-        Write-Host "Restoring backup to re-apply CSS..."
         Copy-Item -Path $BackupPath -Destination $TanaPreloadPath -Force
     }
 } else {
@@ -153,7 +141,7 @@ $InjectionCode = @"
 document.onreadystatechange = async (event) => {
   if (document.readyState == "complete") {
     try {
-        const css = "$CssEscaped";
+        const css = "$CssEscaped"; 
         var styleSheet = document.createElement("style");
         styleSheet.innerText = css;
         document.head.appendChild(styleSheet);
