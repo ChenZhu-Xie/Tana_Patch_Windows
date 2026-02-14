@@ -29,7 +29,7 @@ $InlineCss = @"
 .tana-ancestor > div > div[class*="NodeAsListElement-module_main"] {
     background-color: rgba(139, 233, 253, 0.08) !important; 
     border-left: 2px solid rgba(139, 233, 253, 0.3) !important;
-    transition: all 0.3s ease !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* 2. 当前焦点节点 - 霓虹粉 (Neon Pink) */
@@ -38,14 +38,14 @@ $InlineCss = @"
     border-radius: 6px !important;
     box-shadow: 0 0 15px rgba(255, 121, 198, 0.1) !important;
     border-left: 2px solid rgba(255, 121, 198, 0.5) !important;
-    transition: all 0.2s ease !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* 3. 子孙节点背景 - 梦幻紫 (Dreamy Purple) */
-/* 使用 CSS 选择器自动覆盖子孙，减少 JS 计算量 */
 .tana-current div[data-is-node-container="true"] > div > div[class*="NodeAsListElement-module_main"] {
     background-color: rgba(189, 147, 249, 0.06) !important;
-    transition: background-color 0.4s ease !important;
+    border-left: 2px solid rgba(189, 147, 249, 0.2) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* ===== 其他格式化样式 ===== */
