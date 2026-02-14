@@ -18,30 +18,30 @@ $InlineCss = @"
 /* ===== 霓虹文字效果 ===== */
 .node-title, h1, h2, h3, h4, h5, h6 {
     font-size: 30px !important; 
-    font-weight: 350 !important;
+    font-weight: 300 !important;
     color: #FF6AC2 !important; 
     text-shadow: 0 0 10px rgba(255, 106, 194, 0.3) !important;
 }
 
 /* ===== 全路径聚焦系统 (层级不透明度优化) ===== */
 
-/* 1. 父辈/祖辈节点背景 - 深空蓝 (更显著的路径指引) */
+/* 1. 父辈/祖辈节点背景 - 浅黄色半透明 */
 .tana-ancestor > div > div[class*="NodeAsListElement-module_main"] {
-    background-color: rgba(68, 71, 90, 0.35) !important; /* 增加不透明度 */
+    background-color: rgba(255, 255, 0, 0.06) !important; 
     transition: background-color 0.3s ease !important;
 }
 
 /* 2. 当前焦点节点 - 魅惑紫 */
 .tana-current > div > div[class*="NodeAsListElement-module_main"] {
-    background-color: rgba(255, 121, 198, 0.3) !important;
+    background-color: rgba(255, 121, 198, 0.1) !important; /* 降低不透明度 */
     border-radius: 6px !important;
-    box-shadow: inset 0 0 20px rgba(255, 121, 198, 0.2) !important;
+    box-shadow: inset 0 0 20px rgba(255, 121, 198, 0.1) !important;
     transition: background-color 0.2s ease !important;
 }
 
-/* 3. 子孙节点背景 - 薰衣草紫 (更轻量的预览) */
+/* 3. 子孙节点背景 - 深空蓝 */
 .tana-descendant > div > div[class*="NodeAsListElement-module_main"] {
-    background-color: rgba(189, 147, 249, 0.12) !important; /* 降低不透明度 */
+    background-color: rgba(68, 71, 90, 0.35) !important; 
     transition: background-color 0.4s ease !important;
 }
 
