@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Tana Custom CSS Patch (Auto-Detect Version)
+    Tana Custom CSS/JS Patch - Cyber-Focus Refined
 #>
 
 # ============================================================================
@@ -9,160 +9,133 @@
 
 $UseInlineCss = $true
 $InlineCss = @"
-/* ===== Tana Font & Editor Base ===== */
+/* ===== 基础编辑器样式 ===== */
 .editable, .content {
   font-family: "Inconsolata-LXGWMono" !important;
   font-size: 20px !important;
-  letter-spacing: 0.00em !important;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
 }
 
-/* ===== Titles & Headers ===== */
-/* 节点标题 - 霓虹粉 */
+/* ===== 霓虹文字效果 ===== */
 .node-title, h1, h2, h3, h4, h5, h6 {
     font-size: 30px !important; 
     font-weight: 350 !important;
-    letter-spacing: 0.015em !important;
     color: #FF6AC2 !important; 
+    text-shadow: 0 0 10px rgba(255, 106, 194, 0.3) !important;
 }
 
-/* Section 标题区域 - 极光青 */
-div[class*="sectionHeading"] .editable,
-.isSection .editable {
-    font-size: 30px !important; 
-    font-weight: 350 !important;
-    letter-spacing: 0.015em !important;
-    color: #4CC9F0 !important; 
+/* ===== 全路径聚焦系统 (层级不透明度优化) ===== */
+
+/* 1. 父辈/祖辈节点背景 - 深空蓝 (更显著的路径指引) */
+.tana-ancestor > div > div[class*="NodeAsListElement-module_main"] {
+    background-color: rgba(68, 71, 90, 0.35) !important; /* 增加不透明度 */
+    transition: background-color 0.3s ease !important;
 }
 
-/* ===== Inline Text Formats ===== */
-
-/* 加粗 (Bold) - 极光绿 */
-b, strong {
-    font-weight: 350 !important;
-    color: #98ffb3 !important;
+/* 2. 当前焦点节点 - 魅惑紫 */
+.tana-current > div > div[class*="NodeAsListElement-module_main"] {
+    background-color: rgba(255, 121, 198, 0.3) !important;
+    border-radius: 6px !important;
+    box-shadow: inset 0 0 20px rgba(255, 121, 198, 0.2) !important;
+    transition: background-color 0.2s ease !important;
 }
 
-/* 斜体 (Italic) - 复古红 */
-i, em, .italic {
-    font-style: italic !important;
-    color: #FF5555 !important;
+/* 3. 子孙节点背景 - 薰衣草紫 (更轻量的预览) */
+.tana-descendant > div > div[class*="NodeAsListElement-module_main"] {
+    background-color: rgba(189, 147, 249, 0.12) !important; /* 降低不透明度 */
+    transition: background-color 0.4s ease !important;
 }
 
-/* 下划线 (Underline) - 活力橙 */
-u, .underline {
-    text-decoration: none !important;
-    border-bottom: 2px solid #FFB86C !important;
-    padding-bottom: 1px !important;
-    color: inherit !important;
+/* ===== 其他格式化样式 ===== */
+div[class*="sectionHeading"] .editable, .isSection .editable {
+    font-size: 30px !important; color: #4CC9F0 !important; 
 }
+b, strong { color: #98ffb3 !important; }
+i, em, .italic { color: #FF5555 !important; font-style: italic !important; }
+u, .underline { text-decoration: none !important; border-bottom: 2px solid #FFB86C !important; }
 
-/* 删除线 (Strikethrough) - 灰蓝 (含 strike 标签支持) */
+/* 删除线 - 更新为 #cba6f7 */
 strike, s, del, [class*="strikethrough"] {
     text-decoration: line-through !important;
-    color: #94a3b8 !important;
-    opacity: 0.5 !important;
+    color: #cba6f7 !important;
+    opacity: 0.6 !important;
 }
 
-/* 代码块 (Code) - 冰晶蓝 */
-code, pre, kbd, samp {
-  font-family: "Inconsolata-LXGWMono", "JetBrains Mono", monospace !important;
-  font-size: 16px !important;
-  color: #80FFEA !important;
-}
-
-/* 高亮 (Highlight) - 发光黄 */
-mark, .highlight, .expandedHighlight {
-    background-color: rgba(241, 250, 140, 0.15) !important;
-    color: #F1FA8C !important;
-    padding: 0 4px !important;
-    border-radius: 4px !important;
-    border: 1px solid rgba(241, 250, 140, 0.3) !important;
-    font-weight: 450 !important;
-}
+code, pre { color: #80FFEA !important; background-color: rgba(128, 255, 234, 0.1) !important; border-radius: 4px; padding: 2px 4px; }
+mark, .highlight { background-color: rgba(241, 250, 140, 0.15) !important; color: #F1FA8C !important; border-radius: 4px; }
 "@
 
 # ============================================================================
-# 自动路径发现逻辑
+# 自动路径发现
 # ============================================================================
-
-Write-Host "Searching for latest Tana version..." -ForegroundColor Cyan
 $TanaBasePath = "$env:LOCALAPPDATA\tana"
-
-if (-not (Test-Path $TanaBasePath)) {
-    Write-Error "Tana installation directory not found at: $TanaBasePath"
-    exit 1
-}
-
 $LatestVersionDir = Get-ChildItem -Path $TanaBasePath -Directory -Filter "app-*" | 
     Select-Object FullName, @{N='Version';E={[version]($_.Name -replace 'app-','')}} | 
     Sort-Object Version -Descending | 
     Select-Object -First 1
-
-if (-not $LatestVersionDir) {
-    Write-Error "Could not find any Tana version folders."
-    exit 1
-}
-
-Write-Host "Found latest version: $($LatestVersionDir.Version)" -ForegroundColor Green
-
-$TanaBuildPath = Join-Path -Path $LatestVersionDir.FullName -ChildPath "resources\app\build"
-$TanaPreloadPath = Join-Path -Path $TanaBuildPath -ChildPath "preload.js"
+$TanaPreloadPath = Join-Path -Path $LatestVersionDir.FullName -ChildPath "resources\app\build\preload.js"
 $TanaExePath = "$TanaBasePath\Tana.exe"
 
 # ============================================================================
-# 执行补丁逻辑
+# 执行补丁
 # ============================================================================
+Write-Host "Updating CSS: Strikethrough color and Hierarchy Opacity..." -ForegroundColor Cyan
 
-if (-not (Test-Path -Path $TanaPreloadPath)) {
-    Write-Error "preload.js not found at: $TanaPreloadPath"
-    exit 1
-}
-
-$CurrentContent = Get-Content -Path $TanaPreloadPath -Raw
-
-if ($CurrentContent -match "TANA_CUSTOM_CSS_INJECTED") {
-    Write-Host "Patch already detected. Restoring backup to re-apply CSS..." -ForegroundColor Yellow
-    $BackupPath = "$TanaPreloadPath.backup"
-    if (Test-Path -Path $BackupPath) {
-        Copy-Item -Path $BackupPath -Destination $TanaPreloadPath -Force
-    }
+if (Test-Path -Path "$TanaPreloadPath.backup") {
+    $OriginalContent = Get-Content -Path "$TanaPreloadPath.backup" -Raw
 } else {
+    $OriginalContent = Get-Content -Path $TanaPreloadPath -Raw
     Copy-Item -Path $TanaPreloadPath -Destination "$TanaPreloadPath.backup"
-    Write-Host "Backup created."
 }
 
 $CssEscaped = $InlineCss.Replace("\", "\\").Replace("'", "\'").Replace('"', '\"').Replace("`r", "").Replace("`n", " ")
 
-$InjectionCode = @"
+$JsLogic = @"
 
 // TANA_CUSTOM_CSS_INJECTED - DO NOT REMOVE THIS MARKER
 document.onreadystatechange = async (event) => {
   if (document.readyState == "complete") {
     try {
-        const css = "$CssEscaped"; 
-        var styleSheet = document.createElement("style");
-        styleSheet.innerText = css;
+        const styleSheet = document.createElement("style");
+        styleSheet.innerText = "$CssEscaped";
         document.head.appendChild(styleSheet);
-        console.log('Tana custom CSS applied successfully');
-    } catch (err) {
-        console.error('Failed to apply custom CSS:', err);
-    }
+
+        const nodeSelector = 'div[data-is-node-container="true"]';
+        let lastContainer = null;
+
+        const updateContext = (e) => {
+            const container = e.target.closest(nodeSelector);
+            if (!container || container === lastContainer) return;
+
+            document.querySelectorAll('.tana-ancestor, .tana-current, .tana-descendant').forEach(el => {
+                el.classList.remove('tana-ancestor', 'tana-current', 'tana-descendant');
+            });
+
+            lastContainer = container;
+            container.classList.add('tana-current');
+
+            let p = container.parentElement;
+            while(p) {
+                if (p.hasAttribute && p.hasAttribute('data-is-node-container')) p.classList.add('tana-ancestor');
+                p = p.parentElement;
+            }
+
+            container.querySelectorAll(nodeSelector).forEach(child => child.classList.add('tana-descendant'));
+        };
+
+        document.addEventListener('mouseover', updateContext, {passive: true});
+        document.addEventListener('focusin', updateContext, {passive: true});
+        console.log('Cyber-Focus Refined Engine Active');
+    } catch (err) { console.error('Patch Error:', err); }
   }
 };
 "@
 
-Add-Content -Path $TanaPreloadPath -Value $InjectionCode
-Write-Host "Patch applied successfully to $($LatestVersionDir.Version)" -ForegroundColor Green
+$PatchedContent = $OriginalContent + "`r`n" + $JsLogic
+Set-Content -Path $TanaPreloadPath -Value $PatchedContent
+
+Write-Host "Patch refined successfully!" -ForegroundColor Green
 
 # 重启 Tana
-$TanaProcess = Get-Process -Name "Tana" -ErrorAction SilentlyContinue
-if ($TanaProcess) {
-    Stop-Process -Name "Tana" -Force
-    Start-Sleep -Seconds 2
-}
-
-if (Test-Path -Path $TanaExePath) {
-    Start-Process -FilePath $TanaExePath
-}
+Stop-Process -Name "Tana" -Force -ErrorAction SilentlyContinue
+Start-Sleep -Seconds 2
+if (Test-Path -Path $TanaExePath) { Start-Process -FilePath $TanaExePath }
