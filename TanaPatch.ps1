@@ -23,25 +23,28 @@ $InlineCss = @"
     text-shadow: 0 0 10px rgba(255, 106, 194, 0.3) !important;
 }
 
-/* ===== 全路径聚焦系统 (层级不透明度优化) ===== */
+/* ===== 全路径聚焦系统 (性能优化 & 雅致配色) ===== */
 
-/* 1. 父辈/祖辈节点背景 - 浅黄色半透明 */
+/* 1. 父辈/祖辈节点路径 - 晶莹青 (Sky Cyan) */
 .tana-ancestor > div > div[class*="NodeAsListElement-module_main"] {
-    background-color: rgba(255, 255, 0, 0.06) !important; 
-    transition: background-color 0.3s ease !important;
+    background-color: rgba(139, 233, 253, 0.08) !important; 
+    border-left: 2px solid rgba(139, 233, 253, 0.3) !important;
+    transition: all 0.3s ease !important;
 }
 
-/* 2. 当前焦点节点 - 魅惑紫 */
+/* 2. 当前焦点节点 - 霓虹粉 (Neon Pink) */
 .tana-current > div > div[class*="NodeAsListElement-module_main"] {
-    background-color: rgba(255, 121, 198, 0.1) !important; /* 降低不透明度 */
+    background-color: rgba(255, 121, 198, 0.15) !important;
     border-radius: 6px !important;
-    box-shadow: inset 0 0 20px rgba(255, 121, 198, 0.1) !important;
-    transition: background-color 0.2s ease !important;
+    box-shadow: 0 0 15px rgba(255, 121, 198, 0.1) !important;
+    border-left: 2px solid rgba(255, 121, 198, 0.5) !important;
+    transition: all 0.2s ease !important;
 }
 
-/* 3. 子孙节点背景 - 深空蓝 */
-.tana-descendant > div > div[class*="NodeAsListElement-module_main"] {
-    background-color: rgba(68, 71, 90, 0.35) !important; 
+/* 3. 子孙节点背景 - 梦幻紫 (Dreamy Purple) */
+/* 使用 CSS 选择器自动覆盖子孙，减少 JS 计算量 */
+.tana-current div[data-is-node-container="true"] > div > div[class*="NodeAsListElement-module_main"] {
+    background-color: rgba(189, 147, 249, 0.06) !important;
     transition: background-color 0.4s ease !important;
 }
 
@@ -101,30 +104,39 @@ document.onreadystatechange = async (event) => {
 
         const nodeSelector = 'div[data-is-node-container="true"]';
         let lastContainer = null;
+        let activeNodes = new Set();
+        let rafId = null;
 
         const updateContext = (e) => {
             const container = e.target.closest(nodeSelector);
             if (!container || container === lastContainer) return;
 
-            document.querySelectorAll('.tana-ancestor, .tana-current, .tana-descendant').forEach(el => {
-                el.classList.remove('tana-ancestor', 'tana-current', 'tana-descendant');
+            if (rafId) cancelAnimationFrame(rafId);
+
+            rafId = requestAnimationFrame(() => {
+                // 高效清除旧状态
+                activeNodes.forEach(el => el.classList.remove('tana-ancestor', 'tana-current'));
+                activeNodes.clear();
+
+                lastContainer = container;
+                container.classList.add('tana-current');
+                activeNodes.add(container);
+
+                // 向上递归标记祖辈
+                let p = container.parentElement;
+                while(p) {
+                    if (p.hasAttribute && p.hasAttribute('data-is-node-container')) {
+                        p.classList.add('tana-ancestor');
+                        activeNodes.add(p);
+                    }
+                    p = p.parentElement;
+                }
             });
-
-            lastContainer = container;
-            container.classList.add('tana-current');
-
-            let p = container.parentElement;
-            while(p) {
-                if (p.hasAttribute && p.hasAttribute('data-is-node-container')) p.classList.add('tana-ancestor');
-                p = p.parentElement;
-            }
-
-            container.querySelectorAll(nodeSelector).forEach(child => child.classList.add('tana-descendant'));
         };
 
         document.addEventListener('mouseover', updateContext, {passive: true});
         document.addEventListener('focusin', updateContext, {passive: true});
-        console.log('Cyber-Focus Refined Engine Active');
+        console.log('Cyber-Focus Engine V2 (Optimized) Active');
     } catch (err) { console.error('Patch Error:', err); }
   }
 };
