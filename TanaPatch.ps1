@@ -37,23 +37,53 @@ code, pre, kbd, samp {
     font-size: 30px !important; 
     font-weight: 350 !important; /* 300 is regular */
     letter-spacing: 0.015em !important;
-    color: #FF6AC2 !important; /* | 肉色 #fdcebc | 浅蓝色 #01b1c9 #72c7d9 #00b7c3 #a0d8ff #f6ac36 #4CC9F0 */
+    color: #FF6AC2 !important; /* 霓虹粉 */
 }
 
-/* 1. 针对包含 sectionHeading 特征的父级下的编辑区 */
+/* 针对包含 sectionHeading 特征的父级下的编辑区 */
 div[class*="NodeAsListElement-module_sectionHeading"] .editable,
-/* 2. 或者针对包含 isSection 特征的容器下的编辑区 (作为备份) */
 .isSection .editable {
     font-size: 30px !important; 
-    font-weight: 350 !important; /* 300 is regular */
+    font-weight: 350 !important;
     letter-spacing: 0.015em !important;
-    color: #4CC9F0 !important; /* 极光青 #4CC9F0 | 浅绿色 #98ffb3 */
+    color: #4CC9F0 !important; /* 极光青 */
 }
 
+/* 加粗 - 极光绿 */
 strong, b {
     font-size: inherit !important;
-    font-weight: 350 !important; /* 300 is regular */
-    color: #98ffb3 !important; /* 极光紫 #B5179E | 大红色 #f76363 | 粉红色 #f7d990 #e6c8ff #fdcebc #FF6AC2 */
+    font-weight: 350 !important;
+    color: #98ffb3 !important;
+}
+
+/* 斜体 - 丁香紫 */
+em, i, .italic {
+    font-style: italic !important;
+    color: #BD93F9 !important;
+}
+
+/* 下划线 - 活力橙 (现代底边线风格) */
+u, .underline {
+    text-decoration: none !important;
+    border-bottom: 2px solid #FFB86C !important;
+    padding-bottom: 1px !important;
+}
+
+/* 删除线 - 增加兼容性选择器 */
+s, del, .strikethrough, span[style*="line-through"] {
+    text-decoration: line-through !important;
+    color: #94a3b8 !important;
+    opacity: 0.5 !important;
+}
+
+/* 高亮 - 增加 mark 和 .highlight，改用明亮黄 */
+mark, .highlight, .expandedHighlight, .tanas-highlight {
+    background-color: rgba(241, 250, 140, 0.2) !important;
+    color: #F1FA8C !important;
+    padding: 0 4px !important;
+    border-radius: 4px !important;
+    border: 1px solid rgba(241, 250, 140, 0.4) !important;
+    font-weight: 450 !important;
 }
 "@
 
