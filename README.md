@@ -9,3 +9,4 @@
 `TanaAutoWatcher.ps1` 通过 _**app 更新事件**_，执行 `TanaPatch.ps1` —_-+
 - 推荐将 `TanaAutoWatcher.ps1` 放入 _**开机启动项**_ 或 _**任务计划程序**_
 
+> Other files are of no use, currently.
