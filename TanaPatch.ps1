@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-    Tana Custom CSS/JS Patch - Cyber-Focus Refined (Dual-Track + Descendants)
+    Tana Custom CSS/JS Patch - Cyber-Focus Refined (Dual-Track + Focus Animations)
 #>
 
 # ============================================================================
@@ -23,13 +23,13 @@ $InlineCss = @"
     text-shadow: 0 0 10px rgba(255, 106, 194, 0.3) !important;
 }
 
-/* ===== 全路径聚焦系统 (Focus - 背景色) ===== */
+/* ===== 全路径聚焦系统 (Focus - 背景色 + 动画) ===== */
 
 /* 1. 父辈路径 - 晶莹青 */
 .tana-focus-ancestor > div > div[class*="NodeAsListElement-module_main"] {
     background-color: rgba(139, 233, 253, 0.08) !important; 
     border-left: 2px solid rgba(139, 233, 253, 0.3) !important;
-    transition: background-color 0.3s ease !important;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* 2. 当前焦点节点 - 霓虹粉 */
@@ -38,20 +38,22 @@ $InlineCss = @"
     border-radius: 6px !important;
     box-shadow: 0 0 15px rgba(255, 121, 198, 0.1) !important;
     border-left: 2px solid rgba(255, 121, 198, 0.5) !important;
-    transition: background-color 0.2s ease !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
 /* 3. 焦点子孙节点 - 梦幻紫 */
 .tana-focus-current [data-is-node-container] > div > div[class*="NodeAsListElement-module_main"] {
     background-color: rgba(189, 147, 249, 0.06) !important;
     border-left: 2px solid rgba(189, 147, 249, 0.2) !important;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
-/* ===== 全路径悬停系统 (Hover - 虚线边框) ===== */
+/* ===== 全路径悬停系统 (Hover - 虚线边框 - 无动画) ===== */
 
 /* 1. 悬停父辈路径 - 虚线青 */
 .tana-hover-ancestor > div > div[class*="NodeAsListElement-module_main"] {
     border-left: 2px dashed rgba(139, 233, 253, 0.5) !important;
+    transition: none !important;
 }
 
 /* 2. 当前悬停节点 - 虚线粉框 */
@@ -59,11 +61,13 @@ $InlineCss = @"
     outline: 2px dashed rgba(255, 121, 198, 0.5) !important;
     outline-offset: -2px !important;
     border-radius: 6px !important;
+    transition: none !important;
 }
 
 /* 3. 悬停子孙节点 - 虚线紫框 */
 .tana-hover-current [data-is-node-container] > div > div[class*="NodeAsListElement-module_main"] {
     border-left: 2px dashed rgba(189, 147, 249, 0.4) !important;
+    transition: none !important;
 }
 
 /* ===== 其他格式化样式 ===== */
@@ -99,7 +103,7 @@ $TanaExePath = "$TanaBasePath\Tana.exe"
 # ============================================================================
 # 执行补丁
 # ============================================================================
-Write-Host "Updating CSS: Bringing back Descendants (Dreamy Purple)..." -ForegroundColor Cyan
+Write-Host "Updating CSS: Focusing animations on Focus track only..." -ForegroundColor Cyan
 
 if (Test-Path -Path "$TanaPreloadPath.backup") {
     $OriginalContent = Get-Content -Path "$TanaPreloadPath.backup" -Raw
@@ -162,7 +166,7 @@ document.onreadystatechange = async (event) => {
         document.addEventListener('pointerover', (e) => updateTrack('hover', e.target), {passive: true});
         document.addEventListener('focusin', (e) => updateTrack('focus', e.target), {passive: true});
         
-        console.log('Cyber-Focus Engine V3.1 (Descendants Restored) Active');
+        console.log('Cyber-Focus Engine V3.2 (Selective Animations) Active');
     } catch (err) { console.error('Patch Error:', err); }
   }
 };
@@ -171,7 +175,7 @@ document.onreadystatechange = async (event) => {
 $PatchedContent = $OriginalContent + "`r`n" + $JsLogic
 Set-Content -Path $TanaPreloadPath -Value $PatchedContent -Encoding UTF8
 
-Write-Host "Patch with Descendants applied successfully!" -ForegroundColor Green
+Write-Host "Patch applied! Animations restricted to focus track." -ForegroundColor Green
 
 # 重启 Tana
 Stop-Process -Name "Tana" -Force -ErrorAction SilentlyContinue
