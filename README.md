@@ -1,4 +1,6 @@
 
+https://github.com/user-attachments/assets/322e86b6-3410-4035-92c3-fd29804a9ad9
+
 ## English
 
 `TanaAutoWatcher.ps1` executes `TanaPatch.ps1` through _**app-updates events**_ —_-+
