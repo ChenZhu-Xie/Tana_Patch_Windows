@@ -102,7 +102,7 @@ document.onreadystatechange = async (event) => {
         styleSheet.innerText = "$CssEscaped";
         document.head.appendChild(styleSheet);
 
-        const nodeSelector = 'div[data-is-node-container="true"]';
+        const nodeSelector = '[data-is-node-container]';
         let lastContainer = null;
         let activeNodes = new Set();
         let rafId = null;
@@ -134,9 +134,9 @@ document.onreadystatechange = async (event) => {
             });
         };
 
-        document.addEventListener('mouseover', updateContext, {passive: true});
+        document.addEventListener('pointerover', updateContext, {passive: true});
         document.addEventListener('focusin', updateContext, {passive: true});
-        console.log('Cyber-Focus Engine V2 (Optimized) Active');
+        console.log('Cyber-Focus Engine V2.1 (PointerEvents) Active');
     } catch (err) { console.error('Patch Error:', err); }
   }
 };
