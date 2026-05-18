@@ -72,7 +72,7 @@ strong, b {
 $TanaBuildPath = "C:\Users\Xcz\AppData\Local\tana\app-1.506.0\resources\app\build"
 $TanaPreloadPath = Join-Path -Path $TanaBuildPath -ChildPath "preload.js"
 # Tana 主程序路径 (通常位于 Local\tana 目录下，用于重启)
-$TanaExePath = "C:\Users\Xcz\AppData\Local\tana\Tana.exe"
+$TanaExePath = "C:\Users\Xcz\AppData\Local\tana\Tana Outliner.exe"
 
 # ============================================================================
 # SCRIPT LOGIC
@@ -166,9 +166,9 @@ Add-Content -Path $TanaPreloadPath -Value $InjectionCode
 
 # Restart Tana
 Write-Host "Restarting Tana..."
-$TanaProcess = Get-Process -Name "Tana" -ErrorAction SilentlyContinue
+$TanaProcess = Get-Process -Name "Tana Outliner" -ErrorAction SilentlyContinue
 if ($TanaProcess) {
-    Stop-Process -Name "Tana" -Force
+    Stop-Process -Name "Tana Outliner" -Force
     Start-Sleep -Seconds 1
 }
 
@@ -176,6 +176,6 @@ if (Test-Path -Path $TanaExePath) {
     Start-Process -FilePath $TanaExePath
     Write-Host "Custom CSS applied successfully!" -ForegroundColor Green
 } else {
-    Write-Host "Custom CSS applied, but could not find Tana.exe to restart automatically." -ForegroundColor Yellow
+    Write-Host "Custom CSS applied, but could not find Tana Outliner.exe to restart automatically." -ForegroundColor Yellow
     Write-Host "Please start Tana manually."
 }

@@ -98,7 +98,7 @@ $LatestVersionDir = Get-ChildItem -Path $TanaBasePath -Directory -Filter "app-*"
     Sort-Object Version -Descending | 
     Select-Object -First 1
 $TanaPreloadPath = Join-Path -Path $LatestVersionDir.FullName -ChildPath "resources\app\build\preload.js"
-$TanaExePath = "$TanaBasePath\Tana.exe"
+$TanaExePath = "$TanaBasePath\Tana Outliner.exe"
 
 # ============================================================================
 # 执行补丁
@@ -178,6 +178,6 @@ Set-Content -Path $TanaPreloadPath -Value $PatchedContent -Encoding UTF8
 Write-Host "Patch applied! Animations restricted to focus track." -ForegroundColor Green
 
 # 重启 Tana
-Stop-Process -Name "Tana" -Force -ErrorAction SilentlyContinue
+Stop-Process -Name "Tana Outliner" -Force -ErrorAction SilentlyContinue
 Start-Sleep -Seconds 2
 if (Test-Path -Path $TanaExePath) { Start-Process -FilePath $TanaExePath }
